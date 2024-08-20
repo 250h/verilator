@@ -12,7 +12,7 @@ env:
   CI_OS_NAME: linux
   CI_COMMIT: ${{ github.sha }}
   COVERAGE: 1
-  VERILATOR_ARCHIVE: verilator-coverage-${{ github.sha }}.tar.gz
+  VERILATOR_ARCHIVE: verilator-coverage-${{ github.sha }}
 
 defaults:
   run:
@@ -40,14 +40,10 @@ jobs:
     - name: Build
       run: ./ci/ci-script.bash
 
-    - name: Tar up repository
-      working-directory: ${{ github.workspace }}
-      run: tar --posix -c -z -f ${{ env.VERILATOR_ARCHIVE }} repo
-
-    - name: Upload tar archive
+    - name: Upload archive
       uses: actions/upload-artifact@v4
       with:
-        path: ${{ github.workspace }}/${{ env.VERILATOR_ARCHIVE }}
+        path: ${{ github.workspace }}/repo
         name: ${{ env.VERILATOR_ARCHIVE }}
 
 
@@ -79,15 +75,11 @@ jobs:
       CI_RUNS_ON: ubuntu-22.04
     steps:
 
-    - name: Download tar archive
+    - name: Download archive
       uses: actions/download-artifact@v4
       with:
         name: ${{ env.VERILATOR_ARCHIVE }}
         path: ${{ github.workspace }}
-
-    - name: Unpack tar archive
-      working-directory: ${{ github.workspace }}
-      run: tar -x -z -f ${{ env.VERILATOR_ARCHIVE }}
 
     - name: Install test dependencies
       run: ./ci/ci-install.bash

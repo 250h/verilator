@@ -46,10 +46,8 @@ jobs:
       run: ./ci/ci-win-compile.ps1
     - name: test build
       run: ./ci/ci-win-test.ps1
-    - name: Zip up repository
-      run: Compress-Archive -LiteralPath install -DestinationPath verilator.zip
-    - name: Upload zip archive
+    - name: Upload archive
       uses: actions/upload-artifact@v4
       with:
-        path: ${{ github.workspace }}/repo/verilator.zip
-        name: verilator-win.zip
+        path: ${{ github.workspace }}/repo/install
+        name: verilator-win

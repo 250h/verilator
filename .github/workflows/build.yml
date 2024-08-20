@@ -52,7 +52,7 @@ jobs:
       CXX: ${{ matrix.compiler.cxx }}
       CACHE_BASE_KEY: build-${{ matrix.os }}-${{ matrix.compiler.cc }}
       CCACHE_MAXSIZE: 1000M # Per build matrix entry (* 5 = 5000M in total)
-      VERILATOR_ARCHIVE: verilator-${{ github.sha }}-${{ matrix.os }}-${{ matrix.compiler.cc }}.tar.gz
+      VERILATOR_ARCHIVE: verilator-${{ github.sha }}-${{ matrix.os }}-${{ matrix.compiler.cc }}
     steps:
 
     - name: Checkout
@@ -76,14 +76,10 @@ jobs:
     - name: Build
       run: ./ci/ci-script.bash
 
-    - name: Tar up repository
-      working-directory: ${{ github.workspace }}
-      run: tar --posix -c -z -f ${{ env.VERILATOR_ARCHIVE }} repo
-
-    - name: Upload tar archive
+    - name: Upload archive
       uses: actions/upload-artifact@v4
       with:
-        path: ${{ github.workspace }}/${{ env.VERILATOR_ARCHIVE }}
+        path: ${{ github.workspace }}/repo
         name: ${{ env.VERILATOR_ARCHIVE }}
 
 
@@ -123,18 +119,14 @@ jobs:
       CXX: ${{ matrix.compiler.cxx }}
       CACHE_BASE_KEY: test-${{ matrix.os }}-${{ matrix.compiler.cc }}-${{ matrix.reloc }}-${{ matrix.suite }}
       CCACHE_MAXSIZE: 100M # Per build per suite (* 5 * 5 = 2500M in total)
-      VERILATOR_ARCHIVE: verilator-${{ github.sha }}-${{ matrix.os }}-${{ matrix.compiler.cc }}.tar.gz
+      VERILATOR_ARCHIVE: verilator-${{ github.sha }}-${{ matrix.os }}-${{ matrix.compiler.cc }}
     steps:
 
-    - name: Download tar archive
+    - name: Download archive
       uses: actions/download-artifact@v4
       with:
         name: ${{ env.VERILATOR_ARCHIVE }}
         path: ${{ github.workspace }}
-
-    - name: Unpack tar archive
-      working-directory: ${{ github.workspace }}
-      run: tar -x -z -f ${{ env.VERILATOR_ARCHIVE }}
 
     - name: Cache $CCACHE_DIR
       uses: actions/cache@v4
